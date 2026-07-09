@@ -55,7 +55,11 @@ const getLocalOrder = (): number[] | null => {
     if (synced) return JSON.parse(synced);
 
     const stored = localStorage.getItem(LOCAL_ORDER_KEY);
-    if (stored) return JSON.parse(stored);
+    if (stored) {
+      // Migrate old local storage to Supabase!
+      saveTextContent('team_order', stored);
+      return JSON.parse(stored);
+    }
   } catch {}
   return null;
 };

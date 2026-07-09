@@ -40,7 +40,7 @@ const INITIAL_PROGRAMS: Proker[] = [
         ],
         kolaborasi: "P4S/BCH",
         sasaran: "Karang taruna, PKK",
-        status: "selesai"
+        status: "belum_dimulai"
       },
       {
         nama: "Ekspansi Pemasaran",
@@ -51,7 +51,7 @@ const INITIAL_PROGRAMS: Proker[] = [
         ],
         sasaran: "UMKM",
         arahProgram: "Pertanian, UMKM, Kemiskinan, Pemberdayaan Masyarakat",
-        status: "berjalan"
+        status: "belum_dimulai"
       },
       {
         nama: "Perizinan terkait produk",
@@ -78,7 +78,7 @@ const INITIAL_PROGRAMS: Proker[] = [
         ],
         sasaran: "Siswa siswi SD",
         arahProgram: "Wisata dan Potensi Lokal",
-        status: "berjalan"
+        status: "belum_dimulai"
       }
     ]
   },
@@ -91,25 +91,25 @@ const INITIAL_PROGRAMS: Proker[] = [
         nama: "Penanaman Pohon",
         tahapan: ["Menanam pohon bersama di lokasi yang sudah ditentukan"],
         sasaran: "perangkat desa dan masyarakat",
-        status: "selesai"
+        status: "belum_dimulai"
       },
       {
         nama: "Biopori",
         tahapan: ["Sosialisasi dan pembuatan biopori untuk mencegah kekeringan"],
         sasaran: "masyarakat",
         arahProgram: "Kebencanaan dan Kekeringan, Hayati",
-        status: "berjalan"
+        status: "belum_dimulai"
       },
       {
         nama: "Peta Rawan Bencana",
         tahapan: ["Pembuatan peta rawan bencana"],
-        status: "selesai"
+        status: "belum_dimulai"
       },
       {
         nama: "Buku tentang Flora Fauna Meduri",
         tahapan: ["Pembuatan buku tentang flora dan fauna lokal"],
         sasaran: "masyarakat dan anak-anak SD",
-        status: "berjalan"
+        status: "belum_dimulai"
       }
     ]
   },
@@ -128,6 +128,7 @@ const INITIAL_PROGRAMS: Proker[] = [
     ]
   }
 ];
+
 
 function KegiatanStatusBadge({ 
   defaultStatus, 
