@@ -1,4 +1,5 @@
 import { Instagram, Youtube, ShieldAlert } from "lucide-react";
+import { SiTiktok } from "react-icons/si";
 import { EditableText } from "./EditableText";
 
 export function Footer() {
@@ -75,9 +76,15 @@ export function Footer() {
             </div>
             <ul className="space-y-4 font-mono text-xs tracking-wide text-white/50">
               <li>
-                <a href="http://instagram.com/meduri_village" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-3">
+                <a href="https://www.instagram.com/kkntk20unigoro2026?igsh=eG52bmlmdWZndXY=" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-3">
                   <Instagram className="h-4 w-4" />
                   INSTAGRAM
+                </a>
+              </li>
+              <li>
+                <a href="https://www.tiktok.com/@kkntk20.unigoro26?_r=1&_t=ZS-97sV7vftR6z" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-3">
+                  <SiTiktok className="h-4 w-4" />
+                  TIKTOK
                 </a>
               </li>
               <li>

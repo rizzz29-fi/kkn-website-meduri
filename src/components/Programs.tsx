@@ -1,144 +1,135 @@
-import { useState, useCallback } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, useMemo } from "react";
 import { EditableText } from "./EditableText";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAdmin } from "@/hooks/useAdmin";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Leaf, Users, Target, Navigation } from "lucide-react";
 
-export type Program = {
-  title: string;
-  division: string;
-  description: string;
-  status: string;
-  statusColor: string;
+export type Kegiatan = {
+  nama: string;
+  tahapan: string[];
+  kolaborasi?: string;
+  sasaran?: string;
+  arahProgram?: string;
 };
 
-const INITIAL_PROGRAMS: Program[] = [
+export type Proker = {
+  potensi: string;
+  namaProker: string;
+  deskripsiProker?: string;
+  kegiatan: Kegiatan[];
+};
+
+const INITIAL_PROGRAMS: Proker[] = [
   {
-    title: "Pelatihan Digital Marketing UMKM",
-    division: "Ekonomi",
-    description:
-      "Membantu warga desa yang memiliki usaha kecil untuk memasarkan produknya melalui media sosial dan e-commerce.",
-    status: "Selesai",
-    statusColor:
-      "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+    potensi: "Jagung",
+    namaProker: "JAGUNG EMAS",
+    deskripsiProker: "Jagung Ekonomi Mandiri dan Sustainable",
+    kegiatan: [
+      {
+        nama: "Diversifikasi produk",
+        tahapan: [
+          "Sosialisasi terkait olahan jagung",
+          "Pelatihan Pembuatan produk yaitu briket dan makanan olahan jagung"
+        ],
+        kolaborasi: "P4S/BCH",
+        sasaran: "Karang taruna, PKK"
+      },
+      {
+        nama: "Ekspansi Pemasaran",
+        tahapan: [
+          "Pembuatan Google Bussines di UMKM olahan jagung",
+          "Distribusi penjualan produk olahan jagung",
+          "Pembuatan marketplace dan sosial media UMKM olahan jagung"
+        ],
+        sasaran: "UMKM",
+        arahProgram: "Pertanian, UMKM, Kemiskinan, Pemberdayaan Masyarakat"
+      },
+      {
+        nama: "Perizinan terkait produk",
+        tahapan: [
+          "Pendataan UMKM di Desa Meduri",
+          "Pembuatan NIB"
+        ],
+        sasaran: "Pelaku UMKM di Desa Meduri"
+      }
+    ]
   },
   {
-    title: "Bazar Produk Desa",
-    division: "Ekonomi",
-    description:
-      "Penyelenggaraan bazar mingguan untuk mempromosikan hasil pertanian dan kerajinan lokal.",
-    status: "Berjalan",
-    statusColor:
-      "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
+    potensi: "Kesenian",
+    namaProker: "NGLARAS",
+    deskripsiProker: "Nguri Nguri lan Regenerasi Seni Gembrung",
+    kegiatan: [
+      {
+        nama: "Regenerasi",
+        tahapan: [
+          "Pembuatan video pengenalan alat musik",
+          "Pengenalan alat musik",
+          "Pelatihan dan Berkunjung ke Kelompok Gembrung"
+        ],
+        sasaran: "Siswa siswi SD",
+        arahProgram: "Wisata dan Potensi Lokal"
+      }
+    ]
   },
   {
-    title: "Bimbingan Belajar Gratis",
-    division: "Pendidikan",
-    description:
-      "Pendampingan belajar untuk siswa SD dan SMP setiap sore di balai desa.",
-    status: "Berjalan",
-    statusColor:
-      "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
+    potensi: "Kebencanaan dan Kekeringan",
+    namaProker: "MEDURI LESTARI",
+    deskripsiProker: "Melestarikan Ekosistem Desa melalui Edukasi, Resiliensi dan Aksi Konservasi",
+    kegiatan: [
+      {
+        nama: "Penanaman Pohon",
+        tahapan: ["Menanam pohon bersama di lokasi yang sudah ditentukan"],
+        sasaran: "perangkat desa dan masyarakat"
+      },
+      {
+        nama: "Biopori",
+        tahapan: ["Sosialisasi dan pembuatan biopori untuk mencegah kekeringan"],
+        sasaran: "masyarakat",
+        arahProgram: "Kebencanaan dan Kekeringan, Hayati"
+      },
+      {
+        nama: "Peta Rawan Bencana",
+        tahapan: ["Pembuatan peta rawan bencana"]
+      },
+      {
+        nama: "Buku tentang Flora Fauna Meduri",
+        tahapan: ["Pembuatan buku tentang flora dan fauna lokal"],
+        sasaran: "masyarakat dan anak-anak SD"
+      }
+    ]
   },
   {
-    title: "Pojok Literasi Desa",
-    division: "Pendidikan",
-    description:
-      "Pembuatan perpustakaan mini dengan donasi buku untuk meningkatkan minat baca anak-anak.",
-    status: "Belum Dimulai",
-    statusColor:
-      "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400",
-  },
-  {
-    title: "Cek Kesehatan Gratis",
-    division: "Kesehatan",
-    description:
-      "Bekerja sama dengan puskesmas setempat untuk pemeriksaan tensi, gula darah, dan kolesterol warga lansia.",
-    status: "Selesai",
-    statusColor:
-      "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-  },
-  {
-    title: "Penyuluhan Gizi Seimbang",
-    division: "Kesehatan",
-    description:
-      "Edukasi tentang pentingnya gizi seimbang untuk mencegah stunting pada balita.",
-    status: "Belum Dimulai",
-    statusColor:
-      "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400",
-  },
-  {
-    title: "Renovasi Papan Jalan Desa",
-    division: "Infrastruktur",
-    description:
-      "Pembuatan dan pengecatan ulang papan penunjuk jalan di setiap pertigaan desa.",
-    status: "Selesai",
-    statusColor:
-      "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-  },
-  {
-    title: "Pemasangan Lampu Jalan",
-    division: "Infrastruktur",
-    description:
-      "Pemasangan lampu penerangan bertenaga surya di titik-titik rawan.",
-    status: "Berjalan",
-    statusColor:
-      "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
-  },
+    potensi: "Kemiskinan",
+    namaProker: "AKSARA",
+    deskripsiProker: "Aksi sadar Pendidikan",
+    kegiatan: [
+      {
+        nama: "Sosialisasi Pentingnya Pendidikan",
+        tahapan: [],
+        sasaran: "siswa siswi SD",
+        arahProgram: "Kemiskinan"
+      }
+    ]
+  }
 ];
 
 export function Programs() {
-  const [activeTab, setActiveTab] = useState("semua");
-  const { isAdmin } = useAdmin();
-  const [programs, setPrograms] = useState<Program[]>(() => {
-    try {
-      const stored = localStorage.getItem("kkn_programs");
-      if (stored) return JSON.parse(stored) as Program[];
-    } catch {}
-    return INITIAL_PROGRAMS;
-  });
+  const [activePotensi, setActivePotensi] = useState("Semua");
+  
+  // Use INITIAL_PROGRAMS directly as there is no admin status edit anymore
+  const programs = INITIAL_PROGRAMS;
 
-  const handleStatusClick = useCallback((title: string) => {
-    setPrograms((prev) => {
-      const updated = prev.map((p) => {
-        if (p.title === title) {
-          let newStatus = p.status;
-          let newColor = p.statusColor;
-          
-          if (p.status === "Belum Dimulai") {
-            newStatus = "Berjalan";
-            newColor = "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400";
-          } else if (p.status === "Berjalan") {
-            newStatus = "Selesai";
-            newColor = "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
-          } else {
-            newStatus = "Belum Dimulai";
-            newColor = "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400";
-          }
-          
-          return { ...p, status: newStatus, statusColor: newColor };
-        }
-        return p;
-      });
-      localStorage.setItem("kkn_programs", JSON.stringify(updated));
-      return updated;
-    });
-  }, []);
+  const potensiList = ["Semua", "Jagung", "Kesenian", "Kebencanaan dan Kekeringan", "Kemiskinan"];
 
-  const filteredPrograms =
-    activeTab === "semua"
-      ? programs
-      : programs.filter((p) => p.division.toLowerCase() === activeTab);
-
-  const divisions = ["semua", "ekonomi", "pendidikan", "kesehatan", "infrastruktur"];
+  const filteredPrograms = useMemo(() => {
+    if (activePotensi === "Semua") return programs;
+    return programs.filter(p => p.potensi === activePotensi);
+  }, [activePotensi, programs]);
 
   return (
     <section id="programs" className="py-24 bg-kkn-bg-primary text-kkn-text-primary">
@@ -160,81 +151,118 @@ export function Programs() {
           <EditableText
             as="p"
             id="programs_desc"
-            defaultText="Inisiatif dan kegiatan yang kami lakukan untuk memajukan Desa Meduri di berbagai bidang."
+            defaultText="Inisiatif dan kegiatan yang kami lakukan untuk mengoptimalkan potensi Desa Meduri di berbagai bidang."
             className="text-kkn-text-light/90 block"
           />
         </motion.div>
 
-        <div className="flex flex-col lg:flex-row gap-12 mt-16">
-          {/* Left Sidebar (Tabs) - Horizontal Scroll on mobile, vertical sidebar on desktop */}
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 mt-12">
+          {/* Left Sidebar (Tabs) */}
           <div className="w-full lg:w-1/4 flex flex-row overflow-x-auto gap-2 pb-4 scrollbar-none shrink-0 lg:flex-col lg:space-y-2 lg:overflow-x-visible lg:pb-0">
-            {divisions.map((div) => (
+            {potensiList.map((potensi) => (
               <button
-                key={div}
-                onClick={() => setActiveTab(div)}
-                className={`text-center lg:text-left px-4 py-2.5 lg:px-6 lg:py-4 rounded-xl font-bold transition-all whitespace-nowrap text-sm lg:text-base ${
-                  activeTab === div
-                    ? "bg-kkn-bg-dark text-kkn-text-light shadow-md"
-                    : "bg-kkn-card-light text-kkn-text-primary/70 hover:bg-kkn-card-light/80 hover:text-kkn-text-primary"
+                key={potensi}
+                onClick={() => setActivePotensi(potensi)}
+                className={`text-center lg:text-left px-4 py-3 lg:px-6 lg:py-4 rounded-xl font-bold transition-all whitespace-nowrap text-sm lg:text-base border-2 ${
+                  activePotensi === potensi
+                    ? "bg-kkn-bg-dark text-kkn-text-light border-transparent shadow-md"
+                    : "bg-kkn-card-light text-kkn-text-primary/70 border-transparent hover:bg-kkn-card-light/80 hover:text-kkn-text-primary hover:border-kkn-accent-1/30"
                 }`}
               >
-                {div.charAt(0).toUpperCase() + div.slice(1)}
+                {potensi}
               </button>
             ))}
           </div>
 
           {/* Right Content Area */}
           <div className="w-full lg:w-3/4">
-            <motion.div
-              layout
-              className="grid grid-cols-1 md:grid-cols-2 gap-6"
-            >
+            <motion.div layout className="flex flex-col gap-6">
               <AnimatePresence mode="popLayout">
-                {filteredPrograms.map((program, i) => (
+                {filteredPrograms.map((proker, i) => (
                   <motion.div
-                    key={`${program.title}-${i}`}
+                    key={`${proker.namaProker}-${i}`}
                     layout
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.3 }}
-                    className="h-full"
+                    className="bg-kkn-card-light rounded-2xl p-6 md:p-8 border border-kkn-accent-1/20 shadow-sm"
                   >
-                    <div className="bg-kkn-card-light rounded-2xl p-8 border border-kkn-accent-1/20 h-full flex flex-col justify-between hover:shadow-lg transition-shadow group">
-                      <div>
-                        <div className="flex justify-between items-start mb-4 gap-4">
-                          <span className="text-xs font-bold uppercase tracking-widest text-kkn-accent-1">
-                            {program.division}
-                          </span>
-                          {isAdmin ? (
-                            <button
-                              onClick={() => handleStatusClick(program.title)}
-                              className={`text-xs px-3 py-1.5 rounded-full font-bold cursor-pointer hover:opacity-80 transition-opacity ${program.statusColor}`}
-                              title="Klik untuk mengubah status"
-                            >
-                              {program.status}
-                            </button>
-                          ) : (
-                            <span
-                              className={`text-xs px-3 py-1.5 rounded-full font-bold ${program.statusColor}`}
-                            >
-                              {program.status}
-                            </span>
-                          )}
-                        </div>
-                        <EditableText
-                          as="h3"
-                          id={`prog_card_title_${i}`}
-                          defaultText={program.title}
-                          className="text-2xl font-bold text-kkn-text-primary mb-3 leading-tight group-hover:text-kkn-bg-dark transition-colors block"
-                        />
-                        <EditableText
-                          as="p"
-                          id={`prog_card_desc_${i}`}
-                          defaultText={program.description}
-                          className="text-base text-kkn-text-primary/80 font-medium block"
-                        />
-                      </div>
+                    <div className="mb-6 border-b border-black/5 pb-6">
+                      <span className="text-xs font-bold uppercase tracking-widest text-kkn-accent-1 mb-2 block">
+                        Potensi: {proker.potensi}
+                      </span>
+                      <h3 className="text-2xl md:text-3xl font-bold text-kkn-text-primary mb-2 leading-tight">
+                        {proker.namaProker}
+                      </h3>
+                      {proker.deskripsiProker && (
+                        <p className="text-base text-kkn-text-primary/70 font-medium">
+                          {proker.deskripsiProker}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-4">
+                      <h4 className="font-bold text-lg text-kkn-bg-dark flex items-center gap-2">
+                        <Leaf className="w-5 h-5 text-kkn-accent-2" />
+                        Daftar Kegiatan
+                      </h4>
+                      <Accordion type="single" collapsible className="w-full space-y-3">
+                        {proker.kegiatan.map((keg, idx) => (
+                          <AccordionItem
+                            key={idx}
+                            value={`item-${idx}`}
+                            className="bg-white/50 border border-black/5 rounded-xl px-4 data-[state=open]:bg-white data-[state=open]:shadow-sm transition-all"
+                          >
+                            <AccordionTrigger className="hover:no-underline py-4 text-left font-bold text-base md:text-lg text-kkn-text-primary">
+                              {keg.nama}
+                            </AccordionTrigger>
+                            <AccordionContent className="pb-4 pt-1 text-kkn-text-primary/80 space-y-4">
+                              {keg.tahapan && keg.tahapan.length > 0 && (
+                                <div className="space-y-2">
+                                  <div className="text-xs font-bold uppercase tracking-widest text-kkn-accent-1 flex items-center gap-1.5">
+                                    Tahapan Kegiatan
+                                  </div>
+                                  <ul className="list-decimal list-inside space-y-1 ml-1">
+                                    {keg.tahapan.map((t, tIdx) => (
+                                      <li key={tIdx} className="text-sm">{t}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                              
+                              <div className="flex flex-wrap gap-4 pt-2">
+                                {keg.sasaran && (
+                                  <div className="flex-1 min-w-[200px] bg-kkn-bg-primary/50 p-3 rounded-lg border border-black/5">
+                                    <div className="text-[10px] font-bold uppercase tracking-widest text-kkn-text-primary/50 flex items-center gap-1 mb-1">
+                                      <Target className="w-3 h-3" /> Sasaran
+                                    </div>
+                                    <div className="text-sm font-medium">{keg.sasaran}</div>
+                                  </div>
+                                )}
+                                
+                                {keg.kolaborasi && (
+                                  <div className="flex-1 min-w-[200px] bg-kkn-bg-primary/50 p-3 rounded-lg border border-black/5">
+                                    <div className="text-[10px] font-bold uppercase tracking-widest text-kkn-text-primary/50 flex items-center gap-1 mb-1">
+                                      <Users className="w-3 h-3" /> Kolaborasi
+                                    </div>
+                                    <div className="text-sm font-medium">{keg.kolaborasi}</div>
+                                  </div>
+                                )}
+                                
+                                {keg.arahProgram && (
+                                  <div className="flex-1 min-w-[200px] bg-kkn-bg-primary/50 p-3 rounded-lg border border-black/5">
+                                    <div className="text-[10px] font-bold uppercase tracking-widest text-kkn-text-primary/50 flex items-center gap-1 mb-1">
+                                      <Navigation className="w-3 h-3" /> Arah Program
+                                    </div>
+                                    <div className="text-sm font-medium">{keg.arahProgram}</div>
+                                  </div>
+                                )}
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        ))}
+                      </Accordion>
                     </div>
                   </motion.div>
                 ))}

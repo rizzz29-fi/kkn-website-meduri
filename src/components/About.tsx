@@ -257,69 +257,42 @@ export function About() {
         </div>
       </div>
 
-      {/* ========== SECTION 2: Village Profile Cards (Dark BG) ========== */}
-      <div className="about-dark-section">
+      {/* ========== SECTION 2: Sejarah Desa ========== */}
+      <div className="about-sejarah-section">
         <div className="about-container">
-          
-          {/* Header */}
-          <div className="about-dark-header">
-            <div className="about-dark-header-left">
-              <span className="about-badge about-badge-dark">
-                <span className="about-badge-dot"></span>
-                Profil Desa
-              </span>
+          <div className="about-two-col" style={{ alignItems: 'flex-start' }}>
+            {/* Left: Text Content */}
+            <div className="about-text-col" style={{ paddingRight: '5%', paddingTop: '4rem', paddingBottom: '2rem' }}>
               <EditableText
                 as="h2"
-                id="about_profile_title"
+                id="about_sejarah_title"
                 multiline={true}
-                defaultText="Potensi & Keunggulan<br />Desa Meduri"
-                className="about-dark-heading"
+                defaultText="Transform <i style='font-family: serif; font-style: italic; font-weight: 400;'>Your</i><br /><i style='font-family: serif; font-style: italic; font-weight: 400;'>Body</i> and Mind"
+                className="about-sejarah-heading"
+                style={{ fontSize: 'clamp(48px, 6vw, 76px)', color: '#0f2615', lineHeight: '1', marginBottom: '24px', letterSpacing: '-0.03em' }}
+              />
+              <EditableText
+                as="p"
+                id="about_sejarah_desc"
+                multiline={true}
+                defaultText="Join us in transforming your body and mind through our comprehensive yoga and fitness programs."
+                className="about-desc-text"
+                style={{ color: '#2e3a31', marginBottom: '40px', fontSize: '1.1rem', maxWidth: '400px' }}
               />
             </div>
-            <button className="about-dark-cta">
-              Lihat Semua
-              <ArrowRight className="about-arrow-icon-sm" />
-            </button>
-          </div>
 
-          {/* Profile Cards Grid */}
-          <div className="about-profile-grid">
-            {profileSections.slice(0, 4).map((section, idx) => {
-              const IconComponent = section.icon;
-              return (
-                <div key={idx} className="about-profile-card">
-                  <div className="about-profile-card-img">
-                    <EditableImage
-                      id={`about_prof_${section.id}_img`}
-                      defaultSrc={section.img}
-                      alt={section.title}
-                      className="about-img-fill"
-                    />
-                    <div className="about-profile-card-overlay"></div>
-                  </div>
-                  <div className="about-profile-card-body">
-                    <div className="about-profile-card-icon">
-                      <IconComponent className="about-card-icon-svg" />
-                    </div>
-                    <EditableText
-                      as="h4"
-                      id={`about_prof_${section.id}_title`}
-                      defaultText={section.title}
-                      className="about-profile-card-title"
-                    />
-                    <EditableText
-                      as="p"
-                      id={`about_prof_${section.id}_desc`}
-                      defaultText={section.defaultText}
-                      className="about-profile-card-desc"
-                    />
-                    <div className="about-profile-card-arrow">
-                      <ArrowRight className="about-arrow-icon-sm" />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {/* Right: Image */}
+            <div className="about-images-col">
+              <div style={{ width: '100%', height: '100%', minHeight: '480px', borderRadius: '24px', overflow: 'hidden' }}>
+                <EditableImage
+                  id="about_sejarah_img"
+                  defaultSrc="https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?auto=format&fit=crop&q=80&w=800"
+                  alt="Sejarah Desa"
+                  className="about-img-fill"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
