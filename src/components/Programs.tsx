@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { EditableText } from "./EditableText";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -8,13 +8,15 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Leaf, Users, Target, Navigation } from "lucide-react";
-
+import { useAdmin } from "@/hooks/useAdmin";
+import { getTextContent, saveTextContent } from "@/lib/storage";
 export type Kegiatan = {
   nama: string;
   tahapan: string[];
   kolaborasi?: string;
   sasaran?: string;
   arahProgram?: string;
+  status?: "belum_dimulai" | "berjalan" | "selesai";
 };
 
 export type Proker = {
@@ -37,7 +39,8 @@ const INITIAL_PROGRAMS: Proker[] = [
           "Pelatihan Pembuatan produk yaitu briket dan makanan olahan jagung"
         ],
         kolaborasi: "P4S/BCH",
-        sasaran: "Karang taruna, PKK"
+        sasaran: "Karang taruna, PKK",
+        status: "selesai"
       },
       {
         nama: "Ekspansi Pemasaran",
@@ -47,7 +50,8 @@ const INITIAL_PROGRAMS: Proker[] = [
           "Pembuatan marketplace dan sosial media UMKM olahan jagung"
         ],
         sasaran: "UMKM",
-        arahProgram: "Pertanian, UMKM, Kemiskinan, Pemberdayaan Masyarakat"
+        arahProgram: "Pertanian, UMKM, Kemiskinan, Pemberdayaan Masyarakat",
+        status: "berjalan"
       },
       {
         nama: "Perizinan terkait produk",
@@ -55,7 +59,8 @@ const INITIAL_PROGRAMS: Proker[] = [
           "Pendataan UMKM di Desa Meduri",
           "Pembuatan NIB"
         ],
-        sasaran: "Pelaku UMKM di Desa Meduri"
+        sasaran: "Pelaku UMKM di Desa Meduri",
+        status: "belum_dimulai"
       }
     ]
   },
@@ -72,7 +77,8 @@ const INITIAL_PROGRAMS: Proker[] = [
           "Pelatihan dan Berkunjung ke Kelompok Gembrung"
         ],
         sasaran: "Siswa siswi SD",
-        arahProgram: "Wisata dan Potensi Lokal"
+        arahProgram: "Wisata dan Potensi Lokal",
+        status: "berjalan"
       }
     ]
   },
@@ -84,22 +90,26 @@ const INITIAL_PROGRAMS: Proker[] = [
       {
         nama: "Penanaman Pohon",
         tahapan: ["Menanam pohon bersama di lokasi yang sudah ditentukan"],
-        sasaran: "perangkat desa dan masyarakat"
+        sasaran: "perangkat desa dan masyarakat",
+        status: "selesai"
       },
       {
         nama: "Biopori",
         tahapan: ["Sosialisasi dan pembuatan biopori untuk mencegah kekeringan"],
         sasaran: "masyarakat",
-        arahProgram: "Kebencanaan dan Kekeringan, Hayati"
+        arahProgram: "Kebencanaan dan Kekeringan, Hayati",
+        status: "berjalan"
       },
       {
         nama: "Peta Rawan Bencana",
-        tahapan: ["Pembuatan peta rawan bencana"]
+        tahapan: ["Pembuatan peta rawan bencana"],
+        status: "selesai"
       },
       {
         nama: "Buku tentang Flora Fauna Meduri",
         tahapan: ["Pembuatan buku tentang flora dan fauna lokal"],
-        sasaran: "masyarakat dan anak-anak SD"
+        sasaran: "masyarakat dan anak-anak SD",
+        status: "berjalan"
       }
     ]
   },
@@ -112,11 +122,69 @@ const INITIAL_PROGRAMS: Proker[] = [
         nama: "Sosialisasi Pentingnya Pendidikan",
         tahapan: [],
         sasaran: "siswa siswi SD",
-        arahProgram: "Kemiskinan"
+        arahProgram: "Kemiskinan",
+        status: "belum_dimulai"
       }
     ]
   }
 ];
+
+function KegiatanStatusBadge({ 
+  defaultStatus, 
+  statusId 
+}: { 
+  defaultStatus: "belum_dimulai" | "berjalan" | "selesai", 
+  statusId: string 
+}) {
+  const { isAdmin } = useAdmin();
+  const [status, setStatus] = useState<"belum_dimulai" | "berjalan" | "selesai">(defaultStatus);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    const cached = getTextContent(statusId);
+    if (cached === "belum_dimulai" || cached === "berjalan" || cached === "selesai") {
+      setStatus(cached as "belum_dimulai" | "berjalan" | "selesai");
+    }
+  }, [statusId]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newStatus = e.target.value as "belum_dimulai" | "berjalan" | "selesai";
+    setStatus(newStatus);
+    saveTextContent(statusId, newStatus);
+  };
+
+  if (!isClient) return null;
+
+  if (isAdmin) {
+    return (
+      <select 
+        value={status} 
+        onChange={handleChange}
+        onClick={(e) => e.stopPropagation()} 
+        className={`text-[10px] md:text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-wider outline-none cursor-pointer ${
+          status === 'selesai' ? 'bg-green-100 text-green-700 border border-green-200' :
+          status === 'berjalan' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
+          'bg-slate-100 text-slate-600 border border-slate-200'
+        }`}
+      >
+        <option value="belum_dimulai">Belum Dimulai</option>
+        <option value="berjalan">Sedang Berjalan</option>
+        <option value="selesai">Selesai</option>
+      </select>
+    );
+  }
+
+  return (
+    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider whitespace-nowrap ${
+      status === 'selesai' ? 'bg-green-100 text-green-700 border border-green-200' :
+      status === 'berjalan' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
+      'bg-slate-100 text-slate-600 border border-slate-200'
+    }`}>
+      {status === 'selesai' ? 'Selesai' : status === 'berjalan' ? 'Sedang Berjalan' : 'Belum Dimulai'}
+    </span>
+  );
+}
 
 export function Programs() {
   const [activePotensi, setActivePotensi] = useState("Semua");
@@ -215,7 +283,13 @@ export function Programs() {
                             className="bg-white/50 border border-black/5 rounded-xl px-4 data-[state=open]:bg-white data-[state=open]:shadow-sm transition-all"
                           >
                             <AccordionTrigger className="hover:no-underline py-4 text-left font-bold text-base md:text-lg text-kkn-text-primary">
-                              {keg.nama}
+                              <div className="flex items-center gap-3">
+                                <span>{keg.nama}</span>
+                                <KegiatanStatusBadge 
+                                  defaultStatus={keg.status || 'belum_dimulai'} 
+                                  statusId={`status_${proker.namaProker.replace(/\s+/g, '_')}_${keg.nama.replace(/\s+/g, '_')}`} 
+                                />
+                              </div>
                             </AccordionTrigger>
                             <AccordionContent className="pb-4 pt-1 text-kkn-text-primary/80 space-y-4">
                               {keg.tahapan && keg.tahapan.length > 0 && (

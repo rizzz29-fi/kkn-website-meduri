@@ -52,10 +52,10 @@ export function Hero() {
   };
 
   const dataPoints = [
-    { id: "01", text: "SUSTAINABLE FOREST" },
-    { id: "02", text: "COMMUNITY EMPOWERMENT" },
-    { id: "03", text: "LOCAL CRAFTS" },
-    { id: "04", text: "DIGITAL INNOVATION" },
+    { id: "01", text: "PENGEMBANGAN UMKM" },
+    { id: "02", text: "PELESTARIAN BUDAYA" },
+    { id: "03", text: "KONSERVASI ALAM" },
+    { id: "04", text: "EDUKASI & LITERASI" },
   ];
 
   return (

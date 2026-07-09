@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { useAdmin } from '@/hooks/useAdmin';
 import { Pencil, Trash2, Camera, MoveUp, MoveDown, ShieldAlert, ArrowUpDown } from 'lucide-react';
 import { EditableText } from './EditableText';
+import { getTextContent, saveTextContent, textCacheLoaded, loadAllTextContent } from '@/lib/storage';
 
 interface TeamMember {
   id: number;
@@ -48,9 +49,11 @@ const compressImage = (file: File, maxWidth = 800, quality = 0.8): Promise<Blob>
 // Key localStorage untuk simpan urutan lokal
 const LOCAL_ORDER_KEY = 'kkn_team_order';
 
-
 const getLocalOrder = (): number[] | null => {
   try {
+    const synced = getTextContent('team_order');
+    if (synced) return JSON.parse(synced);
+
     const stored = localStorage.getItem(LOCAL_ORDER_KEY);
     if (stored) return JSON.parse(stored);
   } catch {}
@@ -60,6 +63,7 @@ const getLocalOrder = (): number[] | null => {
 const saveLocalOrder = (ids: number[]) => {
   try {
     localStorage.setItem(LOCAL_ORDER_KEY, JSON.stringify(ids));
+    saveTextContent('team_order', JSON.stringify(ids));
   } catch {}
 };
 
@@ -200,6 +204,10 @@ export function Team() {
     setLoading(true);
     setFetchError(null);
     try {
+      if (!textCacheLoaded) {
+        await loadAllTextContent();
+      }
+
       // Coba ambil dengan kolom position
       let res = await supabase
         .from('tim-kkn')
@@ -625,7 +633,10 @@ export function Team() {
         </div>
 
         {/* Gradient Overlay & Text */}
-        <div className="absolute inset-0 bg-gradient-to-t from-kkn-bg-primary via-kkn-bg-primary/50 to-transparent pointer-events-none z-10" />
+        <div 
+          className="absolute inset-0 pointer-events-none z-10" 
+          style={{ background: 'linear-gradient(to top, var(--kkn-team-gradient, #1F2E23) 0%, transparent 80%)' }}
+        />
         
         <div className="absolute bottom-0 left-0 w-full p-6 flex flex-col justify-end pointer-events-none z-20">
           <p className="text-[10px] md:text-xs font-mono tracking-widest text-white/70 mb-2 uppercase drop-shadow-md">
@@ -815,7 +826,7 @@ export function Team() {
                   onMouseMove={(e) => handleSliderMouseMove(e, gi)}
                 >
                   {/* Division Title — now inside the slider, sticky on desktop, snaps on mobile */}
-                  <div className={`shrink-0 w-[280px] h-[400px] md:w-[280px] md:h-[450px] flex flex-col justify-center border-l-2 pl-8 pr-6 space-y-4 bg-kkn-bg-primary z-10 overflow-hidden transition-all duration-200 snap-center md:snap-align-none md:sticky md:left-0 ${
+                  <div className={`shrink-0 w-[280px] h-[400px] md:w-[280px] md:h-[450px] flex flex-col justify-center border-l-2 pl-8 pr-6 space-y-4 bg-kkn-bg-primary z-40 overflow-hidden transition-all duration-200 snap-center md:snap-align-none md:sticky md:left-0 ${
                     isGroupDragOver && isAdmin
                       ? 'border-kkn-text-primary bg-kkn-text-primary/10 scale-[1.01]'
                       : 'border-kkn-accent-1'

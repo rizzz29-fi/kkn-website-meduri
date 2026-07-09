@@ -13,6 +13,7 @@ export const defaultThemeColors = {
   '--kkn-bg-dark': '#1F2E23',
   '--kkn-text-light': '#F7F5F0',
   '--kkn-card-light': '#F2EFE8',
+  '--kkn-team-gradient': '#1F2E23',
 };
 
 const sectionDefaults: Record<string, typeof defaultThemeColors> = {
@@ -63,6 +64,7 @@ const sectionColorConfig: Record<string, ColorConfig[]> = {
     { key: '--kkn-border', label: 'Border Foto', title: 'Border pada Foto Profil & Tombol Edit' },
     { key: '--kkn-bg-dark', label: 'BG Foto & Drag', title: 'Background Foto & Saat Digeser' },
     { key: '--kkn-card-light', label: 'BG Modal', title: 'Background Modal Edit' },
+    { key: '--kkn-team-gradient', label: 'Gradient Foto', title: 'Warna Gradient Bawah Foto Profil' },
   ],
   programs: [
     { key: '--kkn-bg-primary', label: 'BG Utama & Kartu', title: 'Background Section dan Kartu Program' },
