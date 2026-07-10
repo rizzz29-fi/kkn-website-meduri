@@ -50,7 +50,7 @@ const INITIAL_PROGRAMS: Proker[] = [
           "Pembuatan marketplace dan sosial media UMKM olahan jagung"
         ],
         sasaran: "UMKM",
-        arahProgram: "Pertanian, UMKM, Kemiskinan, Pemberdayaan Masyarakat",
+        arahProgram: "Pertanian, UMKM, Peningkatan Kapasitas, Pemberdayaan Masyarakat",
         status: "belum_dimulai"
       },
       {
@@ -114,7 +114,7 @@ const INITIAL_PROGRAMS: Proker[] = [
     ]
   },
   {
-    potensi: "Kemiskinan",
+    potensi: "Peningkatan Kapasitas",
     namaProker: "AKSARA",
     deskripsiProker: "Aksi sadar Pendidikan",
     kegiatan: [
@@ -122,7 +122,7 @@ const INITIAL_PROGRAMS: Proker[] = [
         nama: "Sosialisasi Pentingnya Pendidikan",
         tahapan: [],
         sasaran: "siswa siswi SD",
-        arahProgram: "Kemiskinan",
+        arahProgram: "Peningkatan Kapasitas",
         status: "belum_dimulai"
       }
     ]
@@ -193,7 +193,7 @@ export function Programs() {
   // Use INITIAL_PROGRAMS directly as there is no admin status edit anymore
   const programs = INITIAL_PROGRAMS;
 
-  const potensiList = ["Semua", "Jagung", "Kesenian", "Kebencanaan dan Kekeringan", "Kemiskinan"];
+  const potensiList = ["Semua", "Jagung", "Kesenian", "Kebencanaan dan Kekeringan", "Peningkatan Kapasitas"];
 
   const filteredPrograms = useMemo(() => {
     if (activePotensi === "Semua") return programs;
@@ -258,17 +258,9 @@ export function Programs() {
                     className="bg-kkn-card-light rounded-2xl p-6 md:p-8 border border-kkn-accent-1/20 shadow-sm"
                   >
                     <div className="mb-6 border-b border-black/5 pb-6">
-                      <span className="text-xs font-bold uppercase tracking-widest text-kkn-accent-1 mb-2 block">
-                        Potensi: {proker.potensi}
-                      </span>
                       <h3 className="text-2xl md:text-3xl font-bold text-kkn-text-primary mb-2 leading-tight">
                         {proker.namaProker}
                       </h3>
-                      {proker.deskripsiProker && (
-                        <p className="text-base text-kkn-text-primary/70 font-medium">
-                          {proker.deskripsiProker}
-                        </p>
-                      )}
                     </div>
 
                     <div className="space-y-4">

@@ -93,12 +93,6 @@ export function Footer() {
                   YOUTUBE
                 </a>
               </li>
-              <li className="pt-4 border-t border-white/10">
-                <a href="/admin" className="hover:text-white transition-colors flex items-center gap-3 text-white/30 hover:text-white/80" title="Admin Portal">
-                  <ShieldAlert className="h-4 w-4" />
-                  ADMIN
-                </a>
-              </li>
             </ul>
           </div>
         </div>
