@@ -700,7 +700,16 @@ export function Team() {
       const r = (m.role || '').toUpperCase();
       return r.includes('DOSEN') || r.includes('PEMBIMBING') || r === 'KETUA';
     }
-  );
+  ).sort((a, b) => {
+    const roleA = (a.role || '').toUpperCase();
+    const roleB = (b.role || '').toUpperCase();
+    const getPriority = (r: string) => {
+      if (r.includes('DOSEN') || r.includes('PEMBIMBING')) return 1;
+      if (r === 'KETUA') return 2;
+      return 3;
+    };
+    return getPriority(roleA) - getPriority(roleB);
+  });
   const coreTeam = members.filter(
     (m) => {
       const r = (m.role || '').toUpperCase();

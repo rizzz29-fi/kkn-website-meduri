@@ -539,21 +539,23 @@ export default function ActivityCalendarWithDots() {
                 <div className="space-y-4">
                   {selectedActivity ? (
                     <>
-                      <h5 className="text-lg font-bold text-foreground">
+                      <h5 className="text-lg font-bold text-kkn-text-primary">
                         {selectedActivity.judul || "Kegiatan KKN"}
                       </h5>
                       {selectedActivity.deskripsi ? (
-                        <p className="text-sm text-muted-foreground whitespace-pre-wrap mt-2 leading-relaxed">
+                        <p className="text-sm text-kkn-text-primary whitespace-pre-wrap mt-2 leading-relaxed opacity-80">
                           {selectedActivity.deskripsi}
                         </p>
                       ) : (
-                        <p className="text-sm text-muted-foreground mt-2">
-                          Belum ada dokumentasi aktivitas untuk hari ini.
-                        </p>
+                        parsePhotos(selectedActivity.foto_url).length === 0 && (
+                          <p className="text-sm text-kkn-text-primary mt-2 opacity-80">
+                            Belum ada dokumentasi aktivitas untuk hari ini.
+                          </p>
+                        )
                       )}
                     </>
                   ) : (
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-kkn-text-primary opacity-80">
                       Belum ada dokumentasi aktivitas untuk hari ini.
                     </div>
                   )}
@@ -562,7 +564,7 @@ export default function ActivityCalendarWithDots() {
 
               {isAdmin && (
                 <div className="border-t border-border pt-6">
-                  <label className="block text-sm font-semibold text-foreground mb-2">
+                  <label className="block text-sm font-semibold text-kkn-text-primary mb-2">
                     Unggah Foto Kegiatan
                   </label>
                   <div className="relative">
@@ -583,16 +585,16 @@ export default function ActivityCalendarWithDots() {
                       <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
                         <Upload className="h-6 w-6 text-primary" />
                       </div>
-                      <span className="text-sm font-medium text-muted-foreground text-center">
+                      <span className="text-sm font-medium text-kkn-text-primary opacity-80 text-center">
                         Klik atau pilih foto kegiatan untuk diunggah (bisa lebih dari satu)
                       </span>
                       {selectedFiles.length > 0 && (
-                        <span className="text-xs text-foreground font-semibold">
+                        <span className="text-xs text-kkn-text-primary font-semibold">
                           {selectedFiles.length} file dipilih
                         </span>
                       )}
                       {isUploading && (
-                        <span className="text-xs text-muted-foreground mt-2">
+                        <span className="text-xs text-kkn-text-primary opacity-80 mt-2">
                           Mengunggah...
                         </span>
                       )}
@@ -604,7 +606,7 @@ export default function ActivityCalendarWithDots() {
               {parsePhotos(selectedActivity?.foto_url).length > 0 ? (
                 <div className="pt-4 border-t border-border mt-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h6 className="text-sm font-bold text-foreground">
+                    <h6 className="text-sm font-bold text-kkn-text-primary">
                       Foto Dokumentasi ({parsePhotos(selectedActivity?.foto_url).length})
                     </h6>
                   </div>
